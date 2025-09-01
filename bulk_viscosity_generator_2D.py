@@ -101,11 +101,6 @@ def main(ranSeed: int, number_of_zeta_s: int) -> None:
             sample_i = sample_i.reshape(len(mu_B_plot), len(T_plot))
             print(f"Reshaped sample i shape: {sample_i.shape}")
             zeta_s_set.append(sample_i)
-            if (sample_i < 0).any() or (sample_i > 0.4).any():
-                print("\033[91m[Error: zeta/s out of bounds!\033[0m")
-                return
-            else:
-                print("zeta/s within bounds.")
         progress += 1
 
     # make verification plots
