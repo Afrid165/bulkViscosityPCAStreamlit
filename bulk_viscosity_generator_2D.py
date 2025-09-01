@@ -9,7 +9,7 @@ from PCATransformation import PCATransformation
 
 #this file generates bulk viscosity samples in 2D (T, mu_B) space 
 
-def transformation(zeta_s, zeta_s_max=0.4):
+def transformation(zeta_s):
     zeta_s_max = 0.4 #scaling factor here taken as 0.4 to ensure that zeta/s does not exceed 0.4 
     scale = 1.0
     return zeta_s_max/2.*(1. + np.tanh(scale*zeta_s))
@@ -62,8 +62,8 @@ def main(ranSeed: int, number_of_zeta_s: int) -> None:
     T_GP, mu_B_GP = np.meshgrid(T_GP, mu_B_plot)
     T_muB_GP = np.column_stack((T_GP.ravel(), mu_B_GP.ravel()))
     print(f"Shape of T_muB_GP: {T_muB_GP.shape}")
-    expon_low = np.array([-3])
-    expon_high = np.array([-3])
+    expon_low = np.array([-4])
+    expon_high = np.array([-4])
     training_data = np.concatenate((expon_low, expon_high))
     #make training data shape consistent with T_muB_GP
     training_data = np.tile(training_data, len(mu_B_plot))
@@ -101,6 +101,11 @@ def main(ranSeed: int, number_of_zeta_s: int) -> None:
             sample_i = sample_i.reshape(len(mu_B_plot), len(T_plot))
             print(f"Reshaped sample i shape: {sample_i.shape}")
             zeta_s_set.append(sample_i)
+            if (sample_i < 0).any() or (sample_i > 0.4).any():
+                print("\033[91m[Error: zeta/s out of bounds!\033[0m")
+                return
+            else:
+                print("zeta/s within bounds.")
         progress += 1
 
     # make verification plots
@@ -112,6 +117,7 @@ def main(ranSeed: int, number_of_zeta_s: int) -> None:
     plt.ylim([mu_B_min, mu_B_max])
     plt.xlabel(r"$T$ [GeV]")
     plt.ylabel(r"$\mu_B$ [GeV]")
+    plt.show()
     plt.title("Bulk viscosity samples")
     plt.savefig("zeta_s_samples_3D.png")
     plt.clf()
@@ -142,7 +148,7 @@ def main(ranSeed: int, number_of_zeta_s: int) -> None:
             np.mean((zeta_s_set - zeta_s_reconstructed)**2, axis=0))
         ax = plt.subplot(111, projection='3d')
         ax.plot_surface(T_grid, mu_B_grid, RMS_error, label=f"var = {var_i:.2f}, nPC = {pca.n_components_}")
-        plt.show()
+       
         
     plt.legend()
     plt.xlim([T_min, T_max])
