@@ -37,7 +37,7 @@ def main():
     ax.plot_surface(T_grid, mu_B_grid, bulk, cmap='viridis')
     ax.set_xlim([0, 0.5])
     ax.set_ylim([0, 0.5])
-    ax.set_zlim([0, 0.4])
+    ax.set_zlim([-0.2, 0.4])
     ax.set_xlabel(r"T (GeV)")
     ax.set_ylabel(r"$\mu_B$ (GeV)")
     ax.set_zlabel(r"$\zeta/s$")
